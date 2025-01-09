@@ -11,6 +11,4 @@ const mongoConnect = mongoose.connect(URL,{
 }).then(() => console.log('Mongodb connected')).catch((err)=>console.log("Mongodb error occurred", err))
 
 
-
-
 module.exports = mongoConnect
