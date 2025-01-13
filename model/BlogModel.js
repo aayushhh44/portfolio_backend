@@ -3,10 +3,10 @@ const cheerio = require("cheerio"); // Library to parse HTML
 
 const blogSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  content: { type: String, required: true }, 
+  content: { type: String, required: true },
   date: { type: Date, default: Date.now },
   slug: { type: String, unique: true, required: true },
-  toc: { type: Array, default: [] }, 
+  toc: { type: Array, default: [] },
 });
 
 blogSchema.pre("save", function (next) {

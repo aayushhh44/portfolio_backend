@@ -22,12 +22,27 @@ exports.createBlog = async (req, res) => {
   }
 };
 
-exports.getBlogs = async (req, res) =>{
-    try{
-        const blogs = await Blog.find({}, "title content date slug");
-        res.json(blogs);
-    }catch(err){
-        console.log(err)
-        res.status(500).json({err:"server errorr"})
+exports.getBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({}, "title content date slug");
+    res.json(blogs);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err: "server errorr" });
+  }
+};
+
+exports.getIndividualBlog = async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const blog = await Blog.findOne({ slug });
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
     }
-}
+
+    return res.status(200).json({ blog });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
