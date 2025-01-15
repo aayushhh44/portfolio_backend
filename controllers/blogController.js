@@ -1,7 +1,7 @@
 const Blog = require("../model/BlogModel");
 
 exports.createBlog = async (req, res) => {
-  const { title, content } = req.body;
+  const { title, content, tags } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({ message: "Title and content are required" });
@@ -11,6 +11,7 @@ exports.createBlog = async (req, res) => {
     const newBlog = new Blog({
       title,
       content,
+      tags,
       slug: title.toLowerCase().replace(/\s+/g, "-"),
     });
     await newBlog.save();
@@ -24,8 +25,22 @@ exports.createBlog = async (req, res) => {
 
 exports.getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({}, "title content date slug");
-    res.json(blogs);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    const skip = (page - 1) * limit;
+    const blogs = await Blog.find({}, "title content date slug tags")
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalBlogs = await Blog.countDocuments();
+
+    res.json({
+      blogs,
+      totalBlogs,
+      totalPages: Math.ceil(totalBlogs / limit),
+      currentPage: page,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ err: "server errorr" });
@@ -44,5 +59,37 @@ exports.getIndividualBlog = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getTags = async (req, res) => {
+  try {
+    const tags = await Blog.find({}, { tags: 1 });
+    const resp = tags.map((item) => {
+      return item.tags.map((ite) => ite);
+    });
+
+    const newArr = new Set(resp.flat());
+
+    res.status(200).json({ tags: Array.from(newArr) });
+    // const tagList = tags.map((tag) => tag._id);
+
+    // res.status(200).json({ tags: tagList });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "An error occurred while fetching tags." });
+  }
+};
+
+exports.getTagBlogs = async (req, res) => {
+  const { tag } = req.params;
+  try {
+    // const
+    const blogs = await Blog.find({ tags: tag });
+
+    res.status(200).json({ message: blogs });
+  } catch (error) {
+    console.log("Error fetching blog by tag", error);
+    res.status(500).json({ message: "server error" });
   }
 };

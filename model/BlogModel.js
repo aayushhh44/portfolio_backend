@@ -4,6 +4,7 @@ const cheerio = require("cheerio"); // Library to parse HTML
 const blogSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
+  tags: { type: Array, default: [] },
   date: { type: Date, default: Date.now },
   slug: { type: String, unique: true, required: true },
   toc: { type: Array, default: [] },
