@@ -28,10 +28,14 @@ exports.getBlogs = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 6;
     const skip = (page - 1) * limit;
+
+    // const totalBlogs = blogs.length;
     const blogs = await Blog.find({}, "title content date slug tags")
       .sort({ date: -1 })
       .skip(skip)
       .limit(limit);
+
+    const blogs2 = await Blog.find({}, "title content date").sort({ date: -1 });
 
     const totalBlogs = await Blog.countDocuments();
 
@@ -40,6 +44,7 @@ exports.getBlogs = async (req, res) => {
       totalBlogs,
       totalPages: Math.ceil(totalBlogs / limit),
       currentPage: page,
+      blogs2,
     });
   } catch (err) {
     console.log(err);
@@ -91,5 +96,23 @@ exports.getTagBlogs = async (req, res) => {
   } catch (error) {
     console.log("Error fetching blog by tag", error);
     res.status(500).json({ message: "server error" });
+  }
+};
+
+exports.deleteBlog = async (req, res) => {
+  const { blogId } = req.params;
+
+  try {
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    await blog.deleteOne();
+
+    res.status(200).json({message:"Blog deleted successfully"})
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
