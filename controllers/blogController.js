@@ -25,6 +25,7 @@ exports.createBlog = async (req, res) => {
 
 exports.getBlogs = async (req, res) => {
   try {
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 6;
     const skip = (page - 1) * limit;
@@ -47,7 +48,6 @@ exports.getBlogs = async (req, res) => {
       blogs2,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ err: "server errorr" });
   }
 };
