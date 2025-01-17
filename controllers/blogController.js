@@ -39,6 +39,7 @@ exports.getBlogs = async (req, res) => {
     const blogs2 = await Blog.find({}, "title content date").sort({ date: -1 });
 
     const totalBlogs = await Blog.countDocuments();
+    console.log('total blogs', totalBlogs)
 
     res.json({
       blogs,
@@ -47,6 +48,7 @@ exports.getBlogs = async (req, res) => {
       currentPage: page,
       blogs2,
     });
+   
   } catch (err) {
     res.status(500).json({ err: err.message });
   }
