@@ -48,7 +48,7 @@ exports.getBlogs = async (req, res) => {
       blogs2,
     });
   } catch (err) {
-    res.status(500).json({ err: "server errorr" });
+    res.status(500).json({ err: err.message });
   }
 };
 
